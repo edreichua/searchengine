@@ -1,0 +1,35 @@
+Test started at: Sun_Aug_09_21:52:53_2015
+Operating system and host name: Linux tahoe.cs.dartmouth.edu 4.0.4-303.fc22.x86_64 #1 SMP Thu May 28 12:37:06 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+start testing indexer
+
+
+1. make clean and build indexer
+rm -f *~
+rm -f *#
+rm -f *.o
+cd ../../data; rm -f *.dat;
+gcc -Wall -pedantic -std=c11 -c ./src/indexer.c ./src/list.c ./src/web.c ./src/hashtable.c ./src/file.c
+gcc -Wall -pedantic -std=c11 -c ./src/indexer.c ./src/list.c ./src/web.c ./src/hashtable.c ./src/file.c
+gcc -Wall -pedantic -std=c11 -o indexer indexer.o web.o list.o hashtable.o file.o -lcurl
+build indexer successfully
+
+
+2.1 Test input parameters: insufficient number of arguments
+./indexer ../../data
+Output: Error: Incorrect number of input argument
+test input parameters successfully
+
+
+2.2 Test input parameters: Invalid data path
+./indexer ./datapath index.dat
+Output: Error: Directory cannot be found
+test input parameters successfully
+
+
+3. Test indexer in the testing mode and compare the results
+./indexer ../../data tmpindex tmpnewindex
+Output: inverted index reconstructed from file successfully
+Indexes have been built, read and rewritten correctly!
+
+
+Test ended at: Sun_Aug_09_21:56:22_2015

@@ -1,0 +1,155 @@
+Created by: Chua Zheng Fu Edrei
+COSC 50 Summer 2015 
+Lab Assignment 6: README for Query
+08/15/2015
+
+##########################################################################################
+
+Instructions for use: 
+
+1) Run make query in the query directory to make query
+
+2) To run the program, use the following input option:
+
+ 	 ./query [INDEX FILE] [HTML DIR]
+     
+  [INDEX FILE] is the file name of the inverted index and [HTML DIR] is the directory that
+  stores all the html files
+   
+3) To test the program, go to the test directory and run QEBATS.sh
+
+   QEBATS.sh requires queryengine_test.c to run and presuppose that the datapath of the 
+   directory of the html files is $(datapath) (default is ../../data) and the inverted 
+   index file is $(indexfile) (default is ../../indexer/index.dat). This should be
+   changed accordingly.
+
+------------------------------------------------------------------------------------------
+   
+Special considerations:
+
+ 1. query returns the top 50 results (or less if there are fewer URLs that meet the search
+ 	criteria). The user can change the maximum number of URLs return by changing the constant
+    MAXRESULT (the default is 50).
+    
+ 2. query assumes that there are less than MAXSIZE unique urls. The default for MAXSIZE is 
+    1705. If there are more urls, the value of MAXSIZE should be changed accordingly.
+    
+ 3. query allows the user to key in a maximum of MAXLEN characters for the search criteria 
+    and operators. Entries that contain more than MAXLEN characters will be truncated. The 
+    default for MAXLEN is 1000 and can be adjusted accordingly.
+
+------------------------------------------------------------------------------------------
+Files in package lab6/utils
+
+1) Makefile (to build the library)
+
+2) common.h
+
+3) web.h, web.c
+
+4) list.h, list.c
+
+5) file.h, file.c
+
+6) hashtable.h, hashtable.c
+
+
+Files in package lab6/query
+
+1) src								// Source code directory
+	a) query.c
+		functions: 	char* getFileName(int fileName, char* dir);		// function from Indexer
+					int ReadFile(HashTable* index, char *file);		// function from Indexer
+					int FindHash(char* word, int array[][2], HashTable index);
+					int FindIntersection(int array1[][2], int size1, int array2[][2], int size2);
+					int FindUnion(int array1[][2], int size1, int array2[][2], int size2);
+					void Sort(int array[][2], int size, int criteria);
+					int BinarySearch(int array[][2], int min, int max, int doc);
+					int StringToWord(char wordarray[][MAXLEN], char text[MAXLEN]);
+					int CheckOperator(char wordarray[][MAXLEN], int check, int count);
+					int ReturnURL(char url[MAXLEN], int doc_id, char* dir);
+					
+	b) header.h
+		include web.h, hashtable.h, list.h, file.h, common.h
+
+
+2) test 								// Testing directory
+	a) QEBATS.sh						// Automated testing
+	
+	b) queryengine_test.c				// c script to support QEBATS.sh
+	
+	c) Makefile							// Makefile for test
+	
+	d) header.h							// header.h for queryengine_test.c
+	
+	e) Sun_Aug_16_11:07:59_2015.log		// log file
+
+3) README								// README for query
+
+4) Makefile								// make and make clean functionality
+
+5) query_doc.pdf						// Documentation
+
+------------------------------------------------------------------------------------------
+
+Sample output:
+
+Test invalid input syntax
+QUERY :> AND dog
+Error: Invalid input syntax
+
+Test no result
+QUERY :> thisisrandom
+No results found.
+
+3.4 Test single entry
+QUERY :> incredible
+
+Printing the top 5 results or less for testing:
+Document ID:1443 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Columbia_Lions.html
+Document ID:1355 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Mister_Rogers%27_Neighborhood.html
+Document ID:1148 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Supreme_Court_of_the_United_States.html
+Document ID:1090 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/OS/2.html
+Document ID:830 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Linus_Torvalds.html
+
+Test AND
+QUERY :> Dartmouth AND College AND Computer AND Science
+
+Printing the top 5 results or less for testing:
+Document ID:5 Importance:668 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+Document ID:2 Importance:407 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html
+Document ID:1155 Importance:381 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/College_admissions_in_the_United_States.html
+Document ID:1522 Importance:300 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Saint_Anselm_College.html
+Document ID:1498 Importance:244 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Union_Dutchmen.html
+
+Test OR
+QUERY :> Dartmouth OR Computer
+
+Printing the top 5 results or less for testing:
+Document ID:5 Importance:416 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+Document ID:1429 Importance:284 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/The_Tabard_(fraternity).html
+Document ID:1127 Importance:284 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College_Greek_organizations.html
+Document ID:1440 Importance:254 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_Forensic_Union.html
+Document ID:1227 Importance:250 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College_student_groups.html
+
+Test combined
+QUERY :> Dartmouth College AND Hanlon OR Mathematics AND Computer Science AND Philosophy OR incredibles Pixar
+
+Printing the top 5 results or less for testing:
+Document ID:5 Importance:659 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+Document ID:97 Importance:427 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Philosophy.html
+Document ID:2 Importance:422 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html
+Document ID:148 Importance:210 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Philosophy_of_mind.html
+Document ID:64 Importance:179 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_graphics.html
+
+Valgrind test
+
+QUERY :> ==24238== 
+==24238== HEAP SUMMARY:
+==24238==     in use at exit: 0 bytes in 0 blocks
+==24238==   total heap usage: 2,405,376 allocs, 2,405,376 frees, 39,421,883 bytes allocated
+==24238== 
+==24238== All heap blocks were freed -- no leaks are possible
+==24238== 
+==24238== For counts of detected and suppressed errors, rerun with: -v
+==24238== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

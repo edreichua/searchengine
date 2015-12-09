@@ -1,0 +1,70 @@
+Created by: Chua Zheng Fu Edrei
+COSC 50 Summer 2015 
+Lab Assignment 6: README for TinySearchEngine
+08/16/2015
+
+##########################################################################################
+
+This is the README for the entire TinySearchEngine. For specific instruction, refer to the 
+README for crawler, indexer and query.
+
+Instructions for use: 
+
+1) Run make tse in the top directory to make crawler, indexer and query for the TinySearchEngine.
+   make tse will also make the library by calling make lib in the util directory.
+   Run make clean to clean up the files created during compiling
+   
+2) To run crawler, change to the crawler directory and type in:
+   ./crawler [SEED URL] [TARGET DIRECTORY WHERE TO PUT THE DATA] [MAX CRAWLING DEPTH]
+   eg: ./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data 1
+   
+   More detailed instructions can be found in the README in the crawler directory
+   
+3) To run indexer, change to the indexer directory and use the following 2 input options:
+
+ 	 ./indexer [TARGET_DIRECTORY] [RESULTS FILE NAME] (1)
+     ./indexer [TARGET_DIRECTORY] [RESULTS FILENAME] [REWRITEN FILENAME] (2)
+     
+  (1) is the regular option used to create an inverted index [RESULTS FILE NAME]
+  (2) is the testing option used to test the reconstruction of an inverted index from the 
+  		file [RESULTS FILE NAME]
+  
+  Both options extract files from [TARGET_DIRECTORY]
+  
+  [RESULTS FILE NAME] and [REWRITEN FILENAME] will then be saved in [TARGET_DIRECTORY]
+   as indicated in the lab instructions
+   
+   More detailed instructions can be found in the README in the indexer directory
+
+4) To run query, change to the query directory and use the following input option:
+
+ 	 ./query [INDEX FILE] [HTML DIR]
+     
+  [INDEX FILE] is the file name of the inverted index and [HTML DIR] is the directory that
+  stores all the html files
+   
+5) To test crawler, indexer and query, go to the respective directory and use the testing 
+   shell script
+
+6) util is the directory that contains the common file used to build the static library
+------------------------------------------------------------------------------------------
+   
+Special considerations:
+
+Refer to the specific README for the special considerations used in crawler, indexer and 
+query.
+
+------------------------------------------------------------------------------------------
+Files in the package
+
+1) Makefile (to build the tiny search engine)
+
+2) README 
+
+3) ./util (the util directory to generate the library libtseutil.a)
+
+4) ./crawler (the crawler directory)
+
+5) ./indexer (the indexer directory)
+
+6) ./query (the query directory)

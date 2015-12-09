@@ -1,0 +1,145 @@
+Test started at: Sun_Aug_16_11:07:59_2015
+Operating system and host name: Linux tahoe.cs.dartmouth.edu 4.0.4-303.fc22.x86_64 #1 SMP Thu May 28 12:37:06 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+start testing query
+
+
+1. make clean and build query engine
+rm -f *~
+rm -f *#
+rm -f *.o
+rm -f queryengine_test
+cd ../../util/; make clean
+make[1]: Entering directory '/net/tahoe3/edrei/cs50/labs/cs50-X15-edrei/util'
+rm -f *.o
+rm -f *.a
+make[1]: Leaving directory '/net/tahoe3/edrei/cs50/labs/cs50-X15-edrei/util'
+cd ../../util/; make
+make[1]: Entering directory '/net/tahoe3/edrei/cs50/labs/cs50-X15-edrei/util'
+gcc -Wall -c *.c
+ar -cvq libtseutil.a *.o
+a - file.o
+a - hashtable.o
+a - list.o
+a - web.o
+make[1]: Leaving directory '/net/tahoe3/edrei/cs50/labs/cs50-X15-edrei/util'
+gcc -Wall -pedantic -std=c11 -o queryengine_test ./queryengine_test.c -L../../util/ -ltseutil -lm
+build query engine successfully
+
+
+2.1 Test incorrect number of argument
+./query ../../indexer/index.dat
+Output: Error: Incorrect number of input argument
+test input parameters successfully
+
+
+2.2 Test invalid index file
+./query invalidindex ../../data
+Output: Error: File invalidindex is invalid
+test input parameters successfully
+
+
+2.3 Test invalid directory
+./query ../../indexer/index.dat invaliddir
+Output: Error: Directory invaliddir cannot be found
+test input parameters successfully
+
+
+3. Test query engine
+./query ../../indexer/index.dat ../../data
+Please wait while the query engine is loading. It might take a few minutes... 
+
+3.1 Test invalid input syntax
+QUERY :> AND dog
+Error: Invalid input syntax
+
+Test 3.1 for query engine successfully
+
+3.2 Test invalid input syntax
+QUERY :> cat OR AND dog
+Error: Invalid input syntax
+
+Test 3.2 for query engine successfully
+
+3.3 Test no result
+QUERY :> thisisrandom
+No results found.
+
+Test 3.3 for query engine successfully
+
+3.4 Test single entry
+QUERY :> incredible
+
+Printing the top 5 results or less for testing:
+Document ID:1443 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Columbia_Lions.html
+Document ID:1355 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Mister_Rogers%27_Neighborhood.html
+Document ID:1148 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Supreme_Court_of_the_United_States.html
+Document ID:1090 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/OS/2.html
+Document ID:830 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Linus_Torvalds.html
+
+Test 3.4 for query engine successfully
+
+3.5 Test uppercase
+QUERY :> Incredible
+
+Printing the top 5 results or less for testing:
+Document ID:1443 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Columbia_Lions.html
+Document ID:1355 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Mister_Rogers%27_Neighborhood.html
+Document ID:1148 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Supreme_Court_of_the_United_States.html
+Document ID:1090 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/OS/2.html
+Document ID:830 Importance:1 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Linus_Torvalds.html
+
+Test 3.5 for query engine successfully
+
+3.6 Test AND
+QUERY :> Dartmouth AND College AND Computer AND Science
+
+Printing the top 5 results or less for testing:
+Document ID:5 Importance:668 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+Document ID:2 Importance:407 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html
+Document ID:1155 Importance:381 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/College_admissions_in_the_United_States.html
+Document ID:1522 Importance:300 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Saint_Anselm_College.html
+Document ID:1498 Importance:244 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Union_Dutchmen.html
+
+Test 3.6 for query engine successfully
+
+3.7 Test space as AND
+QUERY :> Dartmouth College Computer Science
+
+Printing the top 5 results or less for testing:
+Document ID:5 Importance:668 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+Document ID:2 Importance:407 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html
+Document ID:1155 Importance:381 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/College_admissions_in_the_United_States.html
+Document ID:1522 Importance:300 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Saint_Anselm_College.html
+Document ID:1498 Importance:244 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Union_Dutchmen.html
+
+Test 3.7 for query engine successfully
+
+3.8 Test OR
+QUERY :> Dartmouth OR Computer
+
+Printing the top 5 results or less for testing:
+Document ID:5 Importance:416 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+Document ID:1429 Importance:284 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/The_Tabard_(fraternity).html
+Document ID:1127 Importance:284 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College_Greek_organizations.html
+Document ID:1440 Importance:254 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_Forensic_Union.html
+Document ID:1227 Importance:250 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College_student_groups.html
+
+Test 3.8 for query engine successfully
+
+3.9 Test combined
+QUERY :> Dartmouth College AND Hanlon OR Mathematics AND Computer Science AND Philosophy OR incredibles Pixar
+
+Printing the top 5 results or less for testing:
+Document ID:5 Importance:659 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+Document ID:97 Importance:427 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Philosophy.html
+Document ID:2 Importance:422 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html
+Document ID:148 Importance:210 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Philosophy_of_mind.html
+Document ID:64 Importance:179 URL:http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_graphics.html
+
+Test 3.9 for query engine successfully
+
+9/9 tests are successful
+All tests are successful. Query engine test success!
+
+
+Test ended at: Sun_Aug_16_11:08:17_2015

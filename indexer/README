@@ -1,0 +1,153 @@
+Created by: Chua Zheng Fu Edrei
+COSC 50 Summer 2015 
+Lab Assignment 5: README for Indexer
+08/09/2015
+
+##########################################################################################
+
+Instructions for used: 
+
+1) Run make to make the file
+
+2) To run the program, use the following 2 input options:
+
+ 	 ./indexer [TARGET_DIRECTORY] [RESULTS FILE NAME] (1)
+     ./indexer [TARGET_DIRECTORY] [RESULTS FILENAME] [REWRITEN FILENAME] (2)
+     
+  (1) is the regular option used to create an inverted index [RESULTS FILE NAME]
+  (2) is the testing option used to test the reconstruction of an inverted index from the 
+  		file [RESULTS FILE NAME]
+  
+  Both options extract files from [TARGET_DIRECTORY]
+  
+  [RESULTS FILE NAME] and [REWRITEN FILENAME] will then be saved in [TARGET_DIRECTORY]
+   as indicated in the lab instructions
+   
+3) To test the program, run BATS.sh. It will generate a logfile. A sample of a logfile
+	generated from a successful test run is shown below
+
+------------------------------------------------------------------------------------------
+   
+Special considerations:
+
+1) It is assumed that the html files have integer-valued names
+2) It is assumed that the html files come in the below format:
+	url
+	page id
+	html doc
+	
+	The first 2 lines will be ignored in the parsing of the words for the inverted index
+3) The user should changed the directory path under datapath for BATS.sh and under UTILDIR
+	for Makefile to reflect the directory path used. The default is "../../data", which 
+	assumes that there is a directory "data" two branch above the current directory that 
+	contains the html files
+
+------------------------------------------------------------------------------------------
+
+Files in package lab5/indexer
+
+1) lab5/indexer/src
+	a) indexer.c
+		functions: 	char* getFileName(char* fileName, char* dir);
+					char* LoadDocument(char* fileName);
+					int GetDocumentId (char* fileName);
+					void SaveIndexToFile(HashTable* index, char* filename);
+					int ReadFile(HashTable* index, char *file);
+					
+	b) file.c and file.h
+		functions: 	int IsDir(const char *path);
+					int IsFile(const char *path);
+					int GetFilenamesInDir(const char *dir, char ***filenames);
+
+	c) list.c and list.h
+		functions:	int ListInsert(int doc, DocumentNode** dnode);
+					void CleanUpList(DocumentNode* head);
+					
+	d) hashtable.c and hashtable.h
+		functions:	unsigned long JenkinsHash(const char *str, unsigned long mod);
+					int HashTableInsert(char* word, int doc, HashTable* index);
+					void InitialiseHashTable(HashTable* hashTable);
+					void CleanUpHash(HashTable* hashtable);
+					
+	e) web.c and web.h
+		functions:	int GetNextWord(const char* doc, int pos, char **word);
+					void NormalizeWord(char *word);
+	
+	f) common.h 					// common functionality
+
+2) BATS.sh 							// Automated testing
+
+3) README							// README for indexer
+
+4) Makefile							// make and make clean functionality
+
+5) indexer_doc.pdf					// Documentation
+
+6) Sun_Aug_09_11:53:28_2015.log		// Sample Test log from running BATS.sh
+
+7) index.dat						// inverted index file generated
+
+
+------------------------------------------------------------------------------------------
+
+Sample output:
+
+1) From running option (1): ./indexer ../../data index.dat
+
+Reading file: ../../data/1
+Reading file: ../../data/10
+Reading file: ../../data/100
+Reading file: ../../data/1000
+Reading file: ../../data/1001
+Reading file: ../../data/1002
+...
+...
+...
+Reading file: ../../data/998
+Reading file: ../../data/999
+Inverted index saved in ../../data/index.dat
+
+2) From running option (2): ./indexer ../../data index.dat new_index.dat
+
+Reading file: ../../data/1
+Reading file: ../../data/10
+Reading file: ../../data/100
+Reading file: ../../data/1000
+Reading file: ../../data/1001
+Reading file: ../../data/1002
+...
+...
+...
+Reading file: ../../data/998
+Reading file: ../../data/999
+Inverted index saved in ../../data/index.dat
+
+Reconstructed inverted index saved in ../../data/new_index.dat
+
+3) Logfile from a successful test using BATS.sh
+
+start testing indexer
+rm -f *~
+rm -f *#
+rm -f *.o
+cd ../../data; rm -f *.dat;
+gcc -Wall -pedantic -std=c11 -c ./src/indexer.c ./src/list.c ./src/web.c ./src/hashtable.c ./src/file.c
+gcc -Wall -pedantic -std=c11 -c ./src/indexer.c ./src/list.c ./src/web.c ./src/hashtable.c ./src/file.c
+gcc -Wall -pedantic -std=c11 -o indexer indexer.o web.o list.o hashtable.o file.o -lcurl
+build indexer successfully
+test input parameters
+test input parameters successfully
+inverted index reconstructed from file successfully
+Indexes have been built, read and rewritten correctly!
+
+4) Valgrind test for memory leak
+
+==19623== 
+==19623== HEAP SUMMARY:
+==19623==     in use at exit: 0 bytes in 0 blocks
+==19623==   total heap usage: 11,860,113 allocs, 11,860,113 frees, 325,059,391 bytes allocated
+==19623== 
+==19623== All heap blocks were freed -- no leaks are possible
+==19623== 
+==19623== For counts of detected and suppressed errors, rerun with: -v
+==19623== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

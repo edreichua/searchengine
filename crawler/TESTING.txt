@@ -1,0 +1,140 @@
+ Created by: Chua Zheng Fu Edrei
+ COSC 50 Summer 2015 
+ Lab Assignment 4: TESTING for crawler
+ 07/29/2015
+
+##########################################################################################
+
+I ran the test listed in crawlerTest.sh and got the results in the test log
+crawlerTestlog.Sat_Aug_01_22:13:54_2015
+
+Here, I would summarise the results:
+
+Test for boundary cases:
+
+# Test 1: More than 3 input parameters:
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data 3 4
+Error: Number of input argument needs to be exactly 3
+
+# Test 2: Less than 3 input parameters
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data
+Error: Number of input argument needs to be exactly 3
+
+# Test 3: Directory doesn't exist
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./doesnotexist 3
+Error: Directory cannot be found
+
+# Test 4: Exceeds maximum depth
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data 5
+Error: Depth exceeds the maximum limit
+
+# Test 5: invalid website (doesn't begin with "http://old-www.cs.dartmouth.edu/~cs50/tse")
+./crawler http://old-www.cs.dartmouth.edu/~cs50/123.html  ./data 1
+Expected output: Error: Invalid URL. Can only crawl URL with URL prefix
+
+# Test 6: invalid website (404)
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/jklmn.html ./data 1
+Error: Invalid URL
+
+Test for correctness:
+
+I test at depth 0, 1, 2 and 3. To make sure that there no duplicates url that are crawled,
+I wrote a c script testhash.c that gets the URL from the files created in the directory
+and compare all of them and print the duplicates. No duplicates were found.
+
+# Test 7: crawl at depth 0
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data 0
+
+[crawler]: Crawling - http://old-www.cs.dartmouth.edu/~cs50/tse/
+
+1 page has been crawled 
+
+
+# Test 8: crawl at depth 1
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data 1
+
+[crawler]: Crawling - http://old-www.cs.dartmouth.edu/~cs50/tse/
+
+[crawler]: Parser found new link - http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Computer_science.html
+[crawler]: Parser found new link - http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/C_(programming_language).html
+[crawler]: Parser found new link - http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Unix.html
+[crawler]: Parser found new link - http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Dartmouth_College.html
+[crawler]: Parser found new link - http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Hash_table.html
+[crawler]: Parser found new link - http://old-www.cs.dartmouth.edu/~cs50/tse/wiki/Linked_list.html
+
+
+ 7 webpages have been crawled
+
+# Test 9: crawl at depth 2
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data 2
+
+[crawler]: Crawling - http://old-www.cs.dartmouth.edu/~cs50/tse/
+.
+.
+.
+1705 webpages have been crawled
+
+# Test 10: crawl at depth 3
+./crawler http://old-www.cs.dartmouth.edu/~cs50/tse/ ./data 3
+
+[crawler]: Crawling - http://old-www.cs.dartmouth.edu/~cs50/tse/
+.
+.
+.
+1705 webpages have been crawled
+
+----------------------
+To check for memory leak, I ran valgrind --leak-check=full --show-leak-kinds=all for the boundary
+cases, depth 0, depth 1 depth 2 and depth 3
+
+for boundary cases (Test 1 to Test 5), there is no memory leak at all as shown by the summary:
+
+==20205== HEAP SUMMARY:
+==20205==     in use at exit: 0 bytes in 0 blocks
+==20205==   total heap usage: 2 allocs, 2 frees, 672 bytes allocated
+==20205== 
+==20205== All heap blocks were freed -- no leaks are possible
+==20205== 
+==20205== For counts of detected and suppressed errors, rerun with: -v
+==20205== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+for Test 6 (seed URL is invalid), there is memory leak but it is inherent to the libcurl library.
+This is shown in the summary:
+
+==304== LEAK SUMMARY:
+==304==    definitely lost: 0 bytes in 0 blocks
+==304==    indirectly lost: 0 bytes in 0 blocks
+==304==      possibly lost: 0 bytes in 0 blocks
+==304==    still reachable: 21,661 bytes in 601 blocks
+==304==         suppressed: 0 bytes in 0 blocks
+
+a sample block is shown:
+
+==304== 1,024 bytes in 1 blocks are still reachable in loss record 592 of 594
+==304==    at 0x4A089C7: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==304==    by 0x36FD0144E2: ??? (in /usr/lib64/libnspr4.so)
+==304==    by 0x36FD01A526: ??? (in /usr/lib64/libnspr4.so)
+==304==    by 0x3705C5BE54: ??? (in /usr/lib64/libcurl.so.4.3.0)
+==304==    by 0x3705C2DA14: curl_global_init (in /usr/lib64/libcurl.so.4.3.0)
+==304==    by 0x401300: main (in /net/tahoe3/edrei/cs50/labs/lab4/crawler)
+
+For Test 7 to 10 (depth 0 to depth 10), the same amount of leak (21661) is detected due to the libcurl
+library, further confirming the fact that the leak is not due to functions written by the author.
+This is shown in the summary:
+
+==304== LEAK SUMMARY:
+==304==    definitely lost: 0 bytes in 0 blocks
+==304==    indirectly lost: 0 bytes in 0 blocks
+==304==      possibly lost: 0 bytes in 0 blocks
+==304==    still reachable: 21,661 bytes in 601 blocks
+==304==         suppressed: 0 bytes in 0 blocks
+
+a sample block is shown:
+
+==304== 1,024 bytes in 1 blocks are still reachable in loss record 592 of 594
+==304==    at 0x4A089C7: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==304==    by 0x36FD0144E2: ??? (in /usr/lib64/libnspr4.so)
+==304==    by 0x36FD01A526: ??? (in /usr/lib64/libnspr4.so)
+==304==    by 0x3705C5BE54: ??? (in /usr/lib64/libcurl.so.4.3.0)
+==304==    by 0x3705C2DA14: curl_global_init (in /usr/lib64/libcurl.so.4.3.0)
+==304==    by 0x401300: main (in /net/tahoe3/edrei/cs50/labs/lab4/crawler)
